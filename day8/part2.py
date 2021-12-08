@@ -58,7 +58,7 @@ if __name__ == '__main__':
                 mapping['2'] = fiver
 
         inverse_mapping = {v:k for k,v in mapping.items()}
-        output_values += [int(''.join([ inverse_mapping[frozenset(output)] for output in outputs.split()]))]
+        output_values += [int(''.join([inverse_mapping[frozenset(output)] for output in outputs.split()]))]
 
 
     print(output_values)
