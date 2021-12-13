@@ -2,7 +2,7 @@
 
 def create_grid(dots):
     maxX, maxY = max(dots, key=lambda x: x[0])[0] + 1, max(dots, key=lambda x: x[1])[1] + 1
-    grid = [['.' for x in range(maxX)] for y in range(maxY)]
+    grid = [['.' for x in range(maxX + 1)] for y in range(maxY + 1)]
 
     for x,y in dots:
         grid[y][x] = '#'
@@ -42,10 +42,10 @@ def count_stars(grid):
     return count
 
 def gridstr(grid):
-    return '\n'.join([''.join(row) for row in grid])
+    return '\n'.join([''.join(row) for row in grid]).replace('.', ' ')
 
 if __name__ == '__main__':
-    data = open('input').read().splitlines()
+    data = open('deb_input').read().splitlines()
 
     paper = []
     dots = []
@@ -65,7 +65,6 @@ if __name__ == '__main__':
 
 
     grid = create_grid(dots)
-    print(gridstr(grid))
 
     # apply first fold
     for fold in folds:
