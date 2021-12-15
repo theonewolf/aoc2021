@@ -1,0 +1,42 @@
+Every round you add:
+
+n - 1 characters
+
+String length becomes
+
+n + n - 1
+
+Then:
+
+(2n - 1) + (2n - 2)
+
+4n - 3
+
+Then:
+
+(4n - 3) + (4n - 4)
+8n - 7
+
+Then
+
+(8n - 7) + (8n - 8)
+16n - 15
+
+
+2^i * n - (2*i - 1)
+
+
+AA -> A
+
+AAA
+AAAA
+AAAAAAA
+
+
+16 rules
+6 B
+3 N
+2 H
+5 C
+
+
