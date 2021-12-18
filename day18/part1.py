@@ -45,11 +45,31 @@ def reduce(current, depth=0, operated=False, rightfirst=False, checkleft=False, 
 
     return [left, right], operated, checkleft, checkright
 
-def test_reduce(original, target):
-    print(f'TEST: {original} -> {target}')
-    result = reduce(eval(original))[0]
+def test_split(original, target):
+    result = split(eval(original))[0]
+    passed = True
+    if str(result).replace(' ', '') == target:
+        print('PASSED: ', end='')
+    else:
+        print('FAILED: ', end='')
+        passed = False
+
+    print(f'split({original}) -> {target}')
     print(f'\tGot: {result}')
-    assert  result == target
+    return passed
+
+def test_explosion(original, target):
+    result = explosion(eval(original))[0]
+    passed = True
+    if str(result).replace(' ', '') == target:
+        print('PASSED: ', end='')
+    else:
+        print('FAILED: ', end='')
+        passed = False
+
+    print(f'explosion({original}) -> {target}')
+    print(f'\tGot: {result}')
+    return passed
 
 def magnitude(current):
     if isinstance(current, int):
@@ -59,9 +79,36 @@ def magnitude(current):
         return (3 * magnitude(left)) + (2 * magnitude(right))
 
 def test_magnitude(final, target):
-    print(f'TEST: magnitude({final}) == {target}')
-    print(f'\tGot: {magnitude(eval(final))}')
-    assert magnitude(eval(final)) == target
+    passed = True
+    if (magnitude(eval(final))) == target:
+        print('PASSED: ', end='')
+    else:
+        print('FAILED: ', end='')
+        passed = False
+
+    print(f'magnitude({final}) == {target}')
+    return passed
+
+def explosion(root, operated=False, depth=0):
+    return ['','']
+
+def split(root, operated=False):
+    if isinstance(root, int):
+        if not operated and root > 10:
+            left, right = int(floor(root / 2)), int(ceil(root / 2))
+            operated = True
+            return [left, right], operated
+        else:
+            return root, operated
+
+    left, right = root
+
+    # Find leftmost things first, DFS on left
+    left, operated = split(left, operated)
+    right, operated = split(right, operated)
+
+    return [left] + [right], operated
+            
 
 if __name__ == '__main__':
     data = open('test_input6').read().splitlines()
@@ -84,27 +131,29 @@ if __name__ == '__main__':
     #        if operated: print(firstrow)
     #print(firstrow)
 
-    test_magnitude('[9, 1]', 29)
-    test_magnitude('[1,9]', 21)
-    test_magnitude('[[9,1],[1,9]]', 129)
-    test_magnitude('[[1,2],[[3,4],5]]', 143)
-    test_magnitude('[[[[0,7],4],[[7,8],[6,0]]],[8,1]]', 1384)
-    test_magnitude('[[[[1,1],[2,2]],[3,3]],[4,4]]', 445)
-    test_magnitude('[[[[3,0],[5,3]],[4,4]],[5,5]]', 791)
-    test_magnitude('[[[[5,0],[7,4]],[5,5]],[6,6]]', 1137)
-    test_magnitude('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]', 3488)
+    if not test_magnitude('[9, 1]', 29): exit()
+    if not test_magnitude('[1,9]', 21): exit()
+    if not test_magnitude('[[9,1],[1,9]]', 129): exit()
+    if not test_magnitude('[[1,2],[[3,4],5]]', 143): exit()
+    if not test_magnitude('[[[[0,7],4],[[7,8],[6,0]]],[8,1]]', 1384): exit()
+    if not test_magnitude('[[[[1,1],[2,2]],[3,3]],[4,4]]', 445): exit()
+    if not test_magnitude('[[[[3,0],[5,3]],[4,4]],[5,5]]', 791): exit()
+    if not test_magnitude('[[[[5,0],[7,4]],[5,5]],[6,6]]', 1137): exit()
+    if not test_magnitude('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]', 3488): exit()
 
-    test_reduce('[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]', '[[[[0,7],4],[7,[[8,4],9]]],[1,1]]')
-    test_reduce('[[[[0,7],4],[7,[[8,4],9]]],[1,1]]', '[[[[0,7],4],[15,[0,13]]],[1,1]]')
-    test_reduce('[[[[0,7],4],[15,[0,13]]],[1,1]]', '[[[[0,7],4],[[7,8],[0,13]]],[1,1]]')
-    test_reduce('[[[[0,7],4],[[7,8],[0,13]]],[1,1]]', '[[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]')
-    test_reduce('[[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]', '[[[[0,7],4],[[7,8],[6,0]]],[8,1]]')
-    test_reduce('[[[[0,7],4],[[7,8],[6,0]]],[8,1]]', '[[[[0,7],4],[[7,8],[6,0]]],[8,1]]')
+    if not test_split('[[[[0,7],4],[15,[0,13]]],[1,1]]', '[[[[0,7],4],[[7,8],[0,13]]],[1,1]]'): exit()
+    if not test_split('[[[[0,7],4],[[7,8],[0,13]]],[1,1]]', '[[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]'): exit()
 
-    #row = eval('[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]')
+    if not test_explosion('[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]', '[[[[0,7],4],[7,[[8,4],9]]],[1,1]]'): exit()
+    if not test_explosion('[[[[0,7],4],[7,[[8,4],9]]],[1,1]]', '[[[[0,7],4],[15,[0,13]]],[1,1]]'): exit()
+    if not test_split('[[[[0,7],4],[15,[0,13]]],[1,1]]', '[[[[0,7],4],[[7,8],[0,13]]],[1,1]]'): exit()
+    if not test_split('[[[[0,7],4],[[7,8],[0,13]]],[1,1]]', '[[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]'): exit()
+    if not test_explosion('[[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]', '[[[[0,7],4],[[7,8],[6,0]]],[8,1]]'): exit()
+    if not test_explosion('[[[[0,7],4],[[7,8],[6,0]]],[8,1]]', '[[[[0,7],4],[[7,8],[6,0]]],[8,1]]'): exit()
+    if not test_split('[[[[0,7],4],[[7,8],[6,0]]],[8,1]]', '[[[[0,7],4],[[7,8],[6,0]]],[8,1]]'): exit()
 
-    test_reduce('[[[[[9,8],1],2],3],4]', '[[[[0,9],2],3],4]')
-    test_reduce('[7,[6,[5,[4,[3,2]]]]]', '[7,[6,[5,[7,0]]]]')
-    test_reduce('[[6,[5,[4,[3,2]]]],1]', '[[6,[5,[7,0]]],3]')
-    test_reduce('[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]', '[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]')
-    test_reduce('[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]', '[[3,[2,[8,0]]],[9,[5,[7,0]]]]')
+    if not test_explosion('[[[[[9,8],1],2],3],4]', '[[[[0,9],2],3],4]'): exit()
+    if not test_explosion('[7,[6,[5,[4,[3,2]]]]]', '[7,[6,[5,[7,0]]]]'): exit()
+    if not test_explosion('[[6,[5,[4,[3,2]]]],1]', '[[6,[5,[7,0]]],3]'): exit()
+    if not test_explosion('[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]', '[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]'): exit()
+    if not test_explosion('[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]', '[[3,[2,[8,0]]],[9,[5,[7,0]]]]'): exit()
