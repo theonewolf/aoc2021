@@ -62,8 +62,71 @@ def find_matching(scanner1, scanner2):
     # center of reference needs to be added to this
     return max_matches + 1, max_match_set
 
+def check_alignment(scanner1, scanner2):
+    return False
+
 def align_beacons(b1):
     pprint(b1)
+
+    scanner1 = []
+    scanner2 = []
+    center1 = None
+    center2 = None
+    for k, v in b1.items():
+        scanner1.append(k[1])
+        center1 = k[0]
+
+        for item in v:
+            scanner2.append(item[1])
+            center2 = item[0]
+
+    pprint(scanner1)
+    pprint(scanner2)
+    pprint(center1)
+    pprint(center2)
+
+    scanner1 = [center1] + scanner1
+    scanner2 = [center2] + scanner2
+    swapped_scanner2 = None
+
+    for xdir in [-1, 1]:
+        for ydir in [-1, 1]:
+            for zdir in [-1, 1]:
+                for flip in range(4):
+                    swapped_scanner2 = []
+                    c1x, c1y, c1z = center1
+                    c2x, c2y, c2z = center2
+                    if flip == 0:
+                        # no flip
+                        # TODO: is this offset computation correct?
+                        offx = c1x - (xdir * c2x)
+                        offy = c1y - (ydir * c2y)
+                        offz = c1z - (zdir * c2z)
+                        for x,y,z in scanner2:
+                           newx = (xdir * x) + offx
+                           newy = (ydir * y) + offy
+                           newz = (zdir * z) + offz
+                        swapped_scanner2.append((newx, newy, newz))
+                        if check_alignment(scanner1, swapped_scanner2):
+                            return (offx, offy, offz, xdir, ydir, zdir, flip), swapped_scanner2
+                    elif flip == 1:
+                        # flip y and z
+                        pass
+                    elif flip == 2:
+                        # flip x and z
+                        pass
+                    elif flip ==3:
+                        # flip x and y
+                        pass
+                    else:
+                        raise 'Unknown state.'
+                    ### Also 4 flips to consider up/down: 4 * 2 * 2 * 2 == 24
+                    ### Create a new set each time
+                    # do it for all of scanner2
+                    # compute offset from centers of reference
+                    # add/subtract offset to all other points
+                    # check if distance from points in scanner1 are all 0, found true values in terms of scanner1
+    return scanner2
 
 if __name__ == '__main__':
     data = open('test_input').read().splitlines()
@@ -94,3 +157,4 @@ if __name__ == '__main__':
             if matching >= 12:
                 print(f'Scanner {scanner1} matches with scanner {scanner2} with {matching} beacons overlapping')
                 align_beacons(max_match_set)
+                exit()
