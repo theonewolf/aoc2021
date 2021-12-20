@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from collections import Counter
-from copy import deepcopy
 from pprint import pprint
 
 # expand by 2 in all directions; simulate infinite grid
@@ -20,7 +19,7 @@ def expand_image(image):
 
 def enhance(image, enhancement_lut):
     image = expand_image(image)
-    new_image = deepcopy(image)
+    new_image = [['.' for _ in row] for row in image]
 
     # we can just do 3x3 grids around the image because we expanded it
     for i in range(len(image) - 2):
@@ -42,10 +41,15 @@ def count_lit(image):
 
     return c['#']
 
+def image_str(image):
+    imstr = ''
+    for row in image:
+        imstr += ''.join(row)
+        imstr += '\n'
+    return imstr
 
 if __name__ == '__main__':
-    data = open('test_input').read().splitlines()
-    #data = open('input').read().splitlines()
+    data = open('input').read().splitlines()
 
     enhancement_lut = data[0]
     pprint(enhancement_lut)
@@ -57,5 +61,7 @@ if __name__ == '__main__':
     pprint(image)
     for step in range(2):
         image = enhance(image, enhancement_lut)
-    pprint(image)
+        pprint(image)
     pprint(count_lit(image))
+
+    print(image_str(image))
