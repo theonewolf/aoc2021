@@ -89,8 +89,17 @@ def test_magnitude(final, target):
     print(f'magnitude({final}) == {target}')
     return passed
 
+# walk down the tree, if anything at depth >= 5 replace pair with 0 literal
+# walk back up the tree to discover left and right nearest neighbors
 def explosion(root, operated=False, depth=0):
-    return ['','']
+    # found a literal
+    if isinstance(root, int):
+        return [root]
+
+    # found a pair
+    left, right = root
+
+    return [explosion(left) + explosion(right)]
 
 def split(root, operated=False):
     if isinstance(root, int):
