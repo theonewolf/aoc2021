@@ -91,15 +91,27 @@ def test_magnitude(final, target):
 
 # walk down the tree, if anything at depth >= 5 replace pair with 0 literal
 # walk back up the tree to discover left and right nearest neighbors
-def explosion(root, operated=False, depth=0):
+def explosion(root, operated=False, depth=0, pair=None, checkleft=False, checkright=False):
     # found a literal
     if isinstance(root, int):
-        return [root]
+        if checkleft:
+            root += pair[0]
+        elif checkright:
+            root += pair[1]
+        return root, operated, depth, pair
 
     # found a pair
     left, right = root
 
-    return [explosion(left) + explosion(right)]
+    # if at depth, we insert a 0 literal for this pair
+    # we add the left side to the nearest left neighbor, and right side to the nearest right neighbor
+    if not operated and depth >= 4 and isinstance(left, int) and isinstance(right, int):
+        return 0, True, depth, [left, right]
+
+    left, operated, depth, pair = explosion(left, operated, depth + 1, pair)
+    right, operated, depth, pair = explosion(right, operated, depth + 1, pair)
+
+    return [left] + [right], operated, depth - 1, pair
 
 def split(root, operated=False):
     if isinstance(root, int):
